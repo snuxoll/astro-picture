@@ -1,0 +1,27 @@
+{
+  "name": "@snuxoll/astro-picture",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.3",
+    "astro": "^4.16.8",
+    "typescript": "^5.6.2"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src/index.js",
+    "src/components/*"
+  ],
+  "devDependencies": {
+    "vitest": "^2.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snuxoll/astro-picture.git"
+  }
+}

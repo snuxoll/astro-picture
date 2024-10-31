@@ -1,0 +1,45 @@
+---
+import {Image} from 'astro:assets';
+import {type LocalImageProps, type RemoteImageProps, getImage} from 'astro:assets';
+import type {HTMLAttributes} from "astro/types";
+
+type Props = (LocalImageProps | RemoteImageProps) & {
+    pictureAttributes?: HTMLAttributes<'picture'>;
+    variants: ({media?: string} & (LocalImageProps | RemoteImageProps))[]
+}
+
+const {variants, ...props} = Astro.props;
+
+if (typeof props.width === 'string') {
+    props.width = parseInt(props.width);
+}
+
+if (typeof props.height === 'string') {
+    props.height = parseInt(props.height);
+}
+
+const fallbackImage = await getImage(props);
+
+const fallbackSrcset =
+    props.densities || (!props.densities && !props.widths)
+        ? `${fallbackImage.src}${fallbackImage.srcSet.values.length > 0 ? ', ' + fallbackImage.srcSet.attribute : ''}`
+        : fallbackImage.srcSet.attribute;
+
+const variantImages = await Promise.all(variants.map((variant) => {
+    const variantProps = {...props, ...variant};
+
+    return getImage(variantProps);
+}))
+---
+<picture>
+    {variantImages.map((image) => {
+        const srcsetAttribute =
+            props.densities || (!props.densities && !props.widths)
+                ? `${image.src}${image.srcSet.values.length > 0 ? ', ' + image.srcSet.attribute : ''}`
+                : image.srcSet.attribute;
+        return (
+                <source srcset={srcsetAttribute} {...image.attributes}/>
+        )
+    })}
+    <img src={fallbackImage.src} srcset={fallbackSrcset} {...fallbackImage.attributes} />
+</picture>
